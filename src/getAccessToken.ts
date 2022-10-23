@@ -4,7 +4,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 const client_id = process.env.SPOTIFY_CLIENT_ID;
 const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
-const mystery_token = process.env.TOKEN;
 
 export interface authenticationResponse {
     access_token: string;
@@ -14,7 +13,7 @@ export interface authenticationResponse {
     refresh_token: string;
 }
 
-if (!client_id || !client_secret || !mystery_token) throw new Error('missing env vars');
+if (!client_id || !client_secret) throw new Error('missing env vars');
 
 const getAccessToken = async (code: string, redirect_uri: string) => {
     const options = {
