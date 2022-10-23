@@ -5,13 +5,14 @@ import dotenv from 'dotenv';
 import axios from 'axios';
 import fs from 'fs';
 import getAccessToken from './getAccessToken';
+import open from 'open';
+import { exit } from 'process';
 
 dotenv.config();
 const client_id = process.env.SPOTIFY_CLIENT_ID;
 const port = 8888;
 export const base_url = `http://localhost:${port}`;
 const redirect_uri = `${base_url}/callback`;
-console.log('redirect_uri: ', redirect_uri);
 
 const app = express();
 
@@ -28,7 +29,7 @@ const generateRandomString = (length: number) => {
 const original_state = generateRandomString(16);
 const scope = 'user-read-currently-playing user-modify-playback-state user-read-playback-state';
 
-const user_acceptance_url =
+export const user_acceptance_url =
     'https://accounts.spotify.com/authorize?' +
     querystring.stringify({
         response_type: 'code',
@@ -37,11 +38,6 @@ const user_acceptance_url =
         redirect_uri: redirect_uri,
         state: original_state,
     });
-app.get('/authorise_app', function (req, res) {
-    console.log('user_acceptance_url: ', user_acceptance_url);
-
-    res.redirect(user_acceptance_url);
-});
 
 app.get('/callback', async function (req, res) {
     const code = req.query.code || null;
@@ -58,13 +54,19 @@ app.get('/callback', async function (req, res) {
         const initial_token = await getAccessToken(String(code), redirect_uri);
         fs.writeFileSync('./initial_token.json', JSON.stringify(initial_token));
 
-        res.send({
-            access_token: initial_token,
-        });
+        console.log('TOKEN CACHED');
+        exit();
     }
 });
-
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`);
-    console.log(`${base_url}/authorise_app`);
+app.get('/authorise_app', function (req, res) {
+    res.redirect(user_acceptance_url);
 });
+app.listen(port, () => {
+    console.log(`Authorisation server listening on port:${port}`);
+    open(`${base_url}/authorise_app`);
+});
+
+const getUserAuthorisation = () => {
+    open(user_acceptance_url);
+};
+export default getUserAuthorisation;

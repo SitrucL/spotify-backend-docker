@@ -1,12 +1,20 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import dotenv from 'dotenv';
+import fs from 'fs';
+import { exit } from 'process';
+
+interface refreshTokenResponse {
+    access_token: string;
+    token_type: 'Bearer';
+    expires_in: number;
+    scope: string;
+}
 
 dotenv.config();
 const client_id = process.env.SPOTIFY_CLIENT_ID;
 const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
-const mystery_token = process.env.TOKEN;
 
-if (!client_id || !client_secret || !mystery_token) throw new Error('missing env vars');
+if (!client_id || !client_secret) throw new Error('missing env vars');
 
 const refreshAccessToken = async (refresh_token: string) => {
     const options = {
@@ -23,15 +31,14 @@ const refreshAccessToken = async (refresh_token: string) => {
     };
 
     try {
-        const response = await axios(options);
+        const response: AxiosResponse<refreshTokenResponse> = await axios(options);
         const { access_token } = response.data;
-        console.log('access_token: ', access_token);
 
         return access_token;
     } catch (error) {
-        console.log('error: ', error);
+        console.log('error refreshing token: ', error);
+        exit();
     }
 };
-refreshAccessToken(mystery_token);
 
 export default refreshAccessToken;

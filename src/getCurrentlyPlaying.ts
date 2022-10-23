@@ -3,6 +3,10 @@ import axios, { AxiosResponse } from 'axios';
 import { EpisodeObject, TrackObjectFull, UsersQueueResponse } from '../spotify';
 
 const normaliseCurrentlyPlaying = (data: TrackObjectFull | EpisodeObject) => {
+    if (!data) {
+        return null;
+    }
+
     if ('album' in data) {
         const normalisedData = {
             currentlyPlaying: {
@@ -23,24 +27,24 @@ const normaliseCurrentlyPlaying = (data: TrackObjectFull | EpisodeObject) => {
     };
 };
 
-const getCurrentlyPlaying = (access_token: string) => {
-    axios({
-        method: `GET`,
-        url: `https://api.spotify.com/v1/me/player/queue`,
-        headers: {
-            Authorization: `Bearer ${access_token}`,
-        },
-    })
-        .then(function (response: AxiosResponse<UsersQueueResponse>) {
-            const currentlyPlaying = response.data.currently_playing;
-
-            const normalisedData = normaliseCurrentlyPlaying(currentlyPlaying);
-
-            console.log(util.inspect(normalisedData, { showHidden: false, depth: null, colors: true }));
-        })
-        .catch(function (error) {
-            console.log(`error getting current song:`, error);
+const getCurrentlyPlaying = async (access_token: string) => {
+    try {
+        const response: AxiosResponse<UsersQueueResponse> = await axios({
+            method: `GET`,
+            url: `https://api.spotify.com/v1/me/player/queue`,
+            headers: {
+                Authorization: `Bearer ${access_token}`,
+            },
         });
+
+        const currentlyPlaying = response.data.currently_playing;
+
+        const normalisedData = normaliseCurrentlyPlaying(currentlyPlaying);
+
+        return normalisedData;
+    } catch (error) {
+        console.log(`error getting current song:`, error);
+    }
 };
 
 export default getCurrentlyPlaying;
