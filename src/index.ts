@@ -4,12 +4,12 @@ import express from 'express';
 const app = express();
 import http from 'http';
 const server = http.createServer(app);
-import { authenticationResponse } from './src/getAccessToken';
+import { authenticationResponse } from './getAccessToken';
 import { Server } from 'socket.io';
 const io = new Server(server);
-import getCurrentlyPlaying from './src/getCurrentlyPlaying';
-import getUserAuthorisation from './src/getUserAuthorisation';
-import refreshAccessToken from './src/refreshAccessToken';
+import getCurrentlyPlaying from './getCurrentlyPlaying';
+import getUserAuthorisation from './getUserAuthorisation';
+import refreshAccessToken from './refreshAccessToken';
 import { exit } from 'process';
 
 const cached_token_exists = fs.existsSync('initial_token.json');
