@@ -23,6 +23,10 @@ const getToken = async () => {
     return new_token;
 };
 
+const stopPolling = () => {
+    isPolling = false;
+};
+
 const startPolling = async (token: string) => {
     isPolling = true;
     const poll_current_track_timer = setInterval(async () => {
@@ -38,8 +42,19 @@ const startPolling = async (token: string) => {
 };
 
 io.on('connection', (socket) => {
-    const connectionCount = io.engine.clientsCount;
+    const connectionCount: number = io.engine.clientsCount;
     console.log('NEW CLIENT CONNECTION:', { id: socket.id, index: connectionCount });
+
+    socket.on('disconnect', (reason) => {
+        const connectionCount: number = io.engine.clientsCount - 1;
+        console.log('remaining clients: ', connectionCount);
+
+        if (connectionCount < 1) {
+            console.log('NO MORE CLIENTS');
+
+            isPolling = false;
+        }
+    });
 
     if (!isPolling) {
         if (!cached_token_exists) {
