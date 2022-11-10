@@ -38,6 +38,7 @@ const getCurrentlyPlaying = async (access_token: string) => {
         });
 
         const currentlyPlaying = response.data.currently_playing;
+        console.log('currentlyPlaying: ', currentlyPlaying.id);
 
         const normalisedData = normaliseCurrentlyPlaying(currentlyPlaying);
 

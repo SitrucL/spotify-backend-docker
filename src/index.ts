@@ -27,9 +27,12 @@ const stopPolling = () => {
     isPolling = false;
 };
 
+let poll_current_track_timer: NodeJS.Timer;
+let refresh_token_timer: NodeJS.Timer;
+
 const startPolling = async (token: string) => {
     isPolling = true;
-    const poll_current_track_timer = setInterval(async () => {
+    poll_current_track_timer = setInterval(async () => {
         try {
             const track_data = await getCurrentlyPlaying(token);
             console.log('emitted track_data: ', track_data?.currentlyPlaying.name);
@@ -38,7 +41,6 @@ const startPolling = async (token: string) => {
             console.log('error getting current track: ', error);
         }
     }, 5000); //refreshes every 5s
-    return () => clearInterval(poll_current_track_timer);
 };
 
 io.on('connection', (socket) => {
@@ -47,12 +49,11 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', (reason) => {
         const connectionCount: number = io.engine.clientsCount - 1;
-        console.log('remaining clients: ', connectionCount);
-
         if (connectionCount < 1) {
-            console.log('NO MORE CLIENTS');
-
+            console.log('---------');
             isPolling = false;
+            clearInterval(poll_current_track_timer);
+            clearInterval(refresh_token_timer);
         }
     });
 
@@ -62,13 +63,15 @@ io.on('connection', (socket) => {
         }
 
         if (cached_token_exists) {
-            getToken().then((token) => startPolling(token)); //initiates the polling with existing token
+            getToken().then((token) => {
+                startPolling(token);
+            }); //initiates the polling with existing token
 
-            const refresh_token_timer = setInterval(() => {
+            refresh_token_timer = setInterval(() => {
+                console.log('starting refresh_token_timer');
                 //grabs a new token  after timer elapses
                 getToken().then((token) => startPolling(token));
             }, 359999); //refreshes every hour
-            () => clearInterval(refresh_token_timer);
         }
     }
 });
