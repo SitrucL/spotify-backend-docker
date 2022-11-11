@@ -22,9 +22,12 @@ const getToken = async () => {
     const new_token = await refreshAccessToken(parsedData.refresh_token);
     return new_token;
 };
+const port = process.env.PORT || '8080';
 
 const stopPolling = () => {
     isPolling = false;
+    clearInterval(poll_current_track_timer);
+    clearInterval(refresh_token_timer);
 };
 
 let poll_current_track_timer: NodeJS.Timer;
@@ -51,9 +54,7 @@ io.on('connection', (socket) => {
         const connectionCount: number = io.engine.clientsCount - 1;
         if (connectionCount < 1) {
             console.log('---------');
-            isPolling = false;
-            clearInterval(poll_current_track_timer);
-            clearInterval(refresh_token_timer);
+            stopPolling();
         }
     });
 
@@ -76,6 +77,6 @@ io.on('connection', (socket) => {
     }
 });
 
-server.listen(8000, () => {
-    console.log('SOCKET INITIATION SERVER LISTENING ON PORT 8000');
+server.listen(port, () => {
+    console.log(`SOCKET INITIATION SERVER LISTENING ON PORT ${port}`);
 });
