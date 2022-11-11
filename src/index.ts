@@ -1,4 +1,3 @@
-import util from 'util';
 import fs from 'fs';
 import express from 'express';
 const app = express();
@@ -8,9 +7,7 @@ import { authenticationResponse } from './getAccessToken';
 import { Server } from 'socket.io';
 const io = new Server(server);
 import getCurrentlyPlaying from './getCurrentlyPlaying';
-import getUserAuthorisation from './getUserAuthorisation';
 import refreshAccessToken from './refreshAccessToken';
-import { exit } from 'process';
 import process from 'process';
 
 const cached_token_exists = fs.existsSync('initial_token.json');
@@ -22,7 +19,7 @@ const getToken = async () => {
     const new_token = await refreshAccessToken(parsedData.refresh_token);
     return new_token;
 };
-const port = process.env.PORT || '8080';
+const port = process.env.PORT || 8080;
 
 const stopPolling = () => {
     isPolling = false;

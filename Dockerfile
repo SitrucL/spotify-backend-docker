@@ -1,30 +1,20 @@
-FROM debian:bullseye as builder
+FROM node:16
 
-ARG NODE_VERSION=16.17.1
-
-RUN apt-get update; apt install -y curl
-RUN curl https://get.volta.sh | bash
-ENV VOLTA_HOME /root/.volta
-ENV PATH /root/.volta/bin:$PATH
-RUN volta install node@${NODE_VERSION}
-
-#######################################################################
-
-RUN mkdir /app
+# Create app directory
 WORKDIR /app
+# Install app dependencies
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+# where available (npm@5+)
+COPY package*.json ./
+COPY . ./
 
-ENV NODE_ENV production
+RUN npm install
 
+# Bundle app source
 COPY . .
 
-RUN npm install && npm run build
-FROM debian:bullseye
+ENV PORT=8080
 
-COPY --from=builder /root/.volta /root/.volta
-COPY --from=builder /app /app
-
-WORKDIR /app
-ENV NODE_ENV production
-ENV PATH /root/.volta/bin:$PATH
+RUN npm run build
 
 CMD [ "npm", "run", "start" ]
