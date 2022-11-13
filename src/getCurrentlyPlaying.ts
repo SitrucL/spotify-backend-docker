@@ -38,10 +38,12 @@ const getCurrentlyPlaying = async (access_token: string) => {
         });
 
         const currentlyPlaying = response.data.currently_playing;
-        console.log('currentlyPlaying: ', currentlyPlaying.id);
-
+        if (currentlyPlaying) {
+            console.log('currentlyPlaying: ', { id: currentlyPlaying.id, name: currentlyPlaying.name });
+        } else {
+            console.log('NO TRACK PLAYING');
+        }
         const normalisedData = normaliseCurrentlyPlaying(currentlyPlaying);
-
         return normalisedData;
     } catch (error) {
         console.log(`error getting current song:`, error);

@@ -36,7 +36,6 @@ const startPolling = async (token: string) => {
         try {
             const track_data = await getCurrentlyPlaying(token);
             io.emit('track_data', track_data);
-            console.log('emitted track_data: ', track_data?.currentlyPlaying.name);
         } catch (error) {
             console.log('error getting current track: ', error);
         }
