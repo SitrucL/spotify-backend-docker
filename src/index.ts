@@ -35,8 +35,8 @@ const startPolling = async (token: string) => {
     poll_current_track_timer = setInterval(async () => {
         try {
             const track_data = await getCurrentlyPlaying(token);
+            io.emit('track_data', track_data);
             console.log('emitted track_data: ', track_data?.currentlyPlaying.name);
-            server.emit('track_info', track_data);
         } catch (error) {
             console.log('error getting current track: ', error);
         }
