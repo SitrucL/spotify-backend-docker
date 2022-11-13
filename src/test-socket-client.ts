@@ -1,7 +1,8 @@
 import { io } from 'socket.io-client';
 
 import readline from 'readline';
-const socket = io('http://localhost:3000');
+// const socket = io('https://personal-spotify-handler.fly.dev');
+const socket = io('http://localhost:8080');
 
 readline.emitKeypressEvents(process.stdin);
 process.stdin.setRawMode(true);
@@ -22,4 +23,8 @@ process.stdin.on('keypress', (str, key) => {
 
 socket.on('connect', () => {
     console.log('CONNECTED TO THE SOCKET SERVER');
+});
+
+socket.on('track_data', (data) => {
+    console.log('incoming track info: ', data);
 });
