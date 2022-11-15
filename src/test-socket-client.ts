@@ -1,3 +1,4 @@
+import util from 'util';
 import { io } from 'socket.io-client';
 
 import readline from 'readline';
@@ -26,5 +27,5 @@ socket.on('connect', () => {
 });
 
 socket.on('track_data', (data) => {
-    console.log('incoming track info: ', data);
+    console.log('incoming track info: :\n ', util.inspect(data, { showHidden: false, depth: null, colors: true }));
 });

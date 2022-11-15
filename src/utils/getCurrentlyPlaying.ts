@@ -1,6 +1,6 @@
 import util from 'util';
 import axios, { AxiosResponse } from 'axios';
-import { EpisodeObject, TrackObjectFull, UsersQueueResponse } from '../spotify';
+import { EpisodeObject, TrackObjectFull, UsersQueueResponse } from '../../spotify';
 
 const normaliseCurrentlyPlaying = (data: TrackObjectFull | EpisodeObject) => {
     if (!data) {
