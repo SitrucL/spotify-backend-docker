@@ -32,6 +32,9 @@ const getToken = async () => {
 const stopPolling = () => {
     isPolling = false;
     clearInterval(poll_current_track_timer);
+};
+
+const stopRefreshingToken = () => {
     clearInterval(refresh_token_timer);
 };
 
@@ -59,6 +62,7 @@ const main = () => {
             if (connectionCount < 1) {
                 console.log('---------');
                 stopPolling();
+                stopRefreshingToken();
             }
         });
 
@@ -72,6 +76,7 @@ const main = () => {
                 void startPolling(token); //initiates the polling with existing token
 
                 refresh_token_timer = setInterval(async () => {
+                    stopPolling();
                     console.log('starting refresh_token_timer');
                     //grabs a new token  after timer elapses
                     const token = await getToken();
