@@ -39,7 +39,7 @@ const getCurrentlyPlaying = async (access_token: string) => {
 
         const currentlyPlaying = response.data.currently_playing;
         if (currentlyPlaying) {
-            console.log('currentlyPlaying: ', { id: currentlyPlaying.id, name: currentlyPlaying.name });
+            console.log('currentlyPlaying: ', { name: currentlyPlaying.name }, `@ ${new Date().toISOString()}`);
         } else {
             console.log('NO TRACK PLAYING');
         }

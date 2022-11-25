@@ -77,7 +77,7 @@ const main = () => {
 
                 refresh_token_timer = setInterval(async () => {
                     stopPolling();
-                    console.log('starting refresh_token_timer');
+                    console.log(`starting refresh_token_timer @ ${new Date().toISOString()}`);
                     //grabs a new token  after timer elapses
                     const token = await getToken();
                     void startPolling(token);
