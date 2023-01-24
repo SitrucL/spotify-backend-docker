@@ -4,7 +4,11 @@ import { EpisodeObject, TrackObjectFull, UsersQueueResponse } from '../../spotif
 
 const normaliseCurrentlyPlaying = (data: TrackObjectFull | EpisodeObject) => {
     if (!data) {
-        return null;
+        return {
+            name: '',
+            artists: [{ name: '', id: '', href: '' }],
+            images: [{ url: '' }],
+        };
     }
 
     if ('album' in data) {
