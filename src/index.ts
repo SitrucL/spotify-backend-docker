@@ -11,8 +11,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: '*',
-        allowedHeaders: ['sogeking'],
-        credentials: true,
+        // allowedHeaders: ['sogeking'],
+        // credentials: true,
     },
 });
 
