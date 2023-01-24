@@ -5,9 +5,11 @@ import { EpisodeObject, TrackObjectFull, UsersQueueResponse } from '../../spotif
 const normaliseCurrentlyPlaying = (data: TrackObjectFull | EpisodeObject) => {
     if (!data) {
         return {
-            name: '',
-            artists: [{ name: '', id: '', href: '' }],
-            images: [{ url: '' }],
+            currentlyPlaying: {
+                name: '',
+                artists: [{ name: '', id: '', href: '' }],
+                images: [{ url: '' }],
+            },
         };
     }
 
