@@ -5,6 +5,7 @@ import http from 'http';
 import { authenticationResponse } from './utils/getAccessToken';
 import { Server } from 'socket.io';
 import { getCurrentlyPlaying, refreshAccessToken } from './utils';
+import getUserAuthorisation from './utils/getUserAuthorisation';
 
 const app = express();
 const server = http.createServer(app);
@@ -55,16 +56,20 @@ const startPolling = async (token: string) => {
         } catch (error) {
             console.log('error getting current track: ', error);
         }
-    }, 5000); //refreshes every 5s
+    }, 10000); //refreshes every 10s
 };
 
 const main = () => {
     io.on('connection', async (socket) => {
         const connectionCount: number = io.engine.clientsCount;
         console.log('NEW CLIENT CONNECTION:', { id: socket.id, index: connectionCount });
+        console.log('connectionCount: ', connectionCount);
 
         socket.on('disconnect', (reason) => {
-            const connectionCount: number = io.engine.clientsCount - 1;
+            console.log('reason: ', reason);
+            const connectionCount: number = io.engine.clientsCount;
+            console.log('disconnect connectionCount: ', connectionCount);
+
             if (connectionCount < 1) {
                 console.log('---------');
                 stopPolling();
@@ -75,6 +80,8 @@ const main = () => {
         if (!isPolling) {
             if (!cached_token_exists) {
                 console.log('NEED TO AUTHORISE APP FOR ACCOUNT');
+                // start authorisation server
+                // getUserAuthorisation();
             }
 
             if (cached_token_exists) {
