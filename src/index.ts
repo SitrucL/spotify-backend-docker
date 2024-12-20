@@ -21,8 +21,8 @@ let isPolling = false;
 let poll_current_track_timer: NodeJS.Timer;
 let refresh_token_timer: NodeJS.Timer;
 
-let previous_track: string | undefined;
-let current_track: string | undefined;
+let previous_track_name: string | undefined;
+let current_track_name: string | undefined;
 
 const port = process.env.PORT || 8080;
 const cached_token_exists = fs.existsSync('initial_token.json');
@@ -45,18 +45,25 @@ const stopRefreshingToken = () => {
     clearInterval(refresh_token_timer);
 };
 
-/** Makes a request to spotify every 5 secs to get the currenlty playing track. The track data is emitted to all clients if the current track is different from the previous one */
+/** Makes a request to spotify every 15 secs to get the currenlty playing track. The track data is emitted to all clients if the current track is different from the previous one */
 const startPolling = async (token: string) => {
     isPolling = true;
     poll_current_track_timer = setInterval(async () => {
         try {
             const track_data = await getCurrentlyPlaying(token);
-            current_track = track_data?.currentlyPlaying.images[0].url;
-            io.emit('track_data', track_data);
+            current_track_name = track_data?.currentlyPlaying.name;
+            if (current_track_name !== previous_track_name) {
+                if (current_track_name === undefined || current_track_name.length < 1) {
+                    io.emit('no_track_data');
+                } else {
+                    io.emit('track_data', track_data);
+                }
+                previous_track_name = current_track_name;
+            }
         } catch (error) {
             console.log('error getting current track: ', error);
         }
-    }, 10000); //refreshes every 10s
+    }, 15000); //refreshes every 15s
 };
 
 const main = () => {
@@ -74,6 +81,8 @@ const main = () => {
                 console.log('---------');
                 stopPolling();
                 stopRefreshingToken();
+                previous_track_name = undefined;
+                current_track_name = undefined;
             }
         });
 
